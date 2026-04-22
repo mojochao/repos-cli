@@ -1,0 +1,26 @@
+[env]
+GOCACHE = "{{config_root}}/build/.gocache"
+
+[tools]
+go = "1.26.1"
+"go:golang.org/x/tools/gopls" = "0.21.1"
+"aqua:golangci/golangci-lint" = "2.11.4"
+
+[tasks.run]
+description = "Run repos cli"
+run = "go run ."
+
+[tasks.test]
+description = "Run tests"
+run = "go test ./..."
+
+[tasks.lint]
+description = "Run linters"
+run = "golangci-lint run"
+
+[tasks.build]
+description = "Build repos cli"
+usage = '''
+arg "<version>" help="app version"
+'''
+run = '''mkdir -p build/.gocache build && go build -ldflags "-X 'main.AppVersion={{usage.version}}'" -o build/repos .'''
