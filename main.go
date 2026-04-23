@@ -170,7 +170,7 @@ func main() {
 					}
 					// Output the repo info in the requested format
 					if !cmd.Bool("json") {
-						return outputHuman(repoInfos, addStatus)
+						return outputHuman(repoInfos)
 					}
 					return outputJSON(repoInfos)
 				},
@@ -314,7 +314,7 @@ func populateStatus(reposRoot string, info *RepoInfo) {
 }
 
 // outputHuman writes repositories to stdout in a human-friendly format.
-func outputHuman(repoInfos []RepoInfo, showStatus bool) error {
+func outputHuman(repoInfos []RepoInfo) error {
 	for _, repoInfo := range repoInfos {
 		fmt.Println(repoInfo.Path)
 	}
