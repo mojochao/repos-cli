@@ -1,0 +1,125 @@
+[tools]
+fnox = "1.26.0"
+hk = "1.48.0"
+node = "26.3.0"
+"npm:docsify-cli" = { version = "4.4.4", depends = ["node"] }
+"npm:markdownlint-cli" = { version = "0.48.0", depends = ["node"] }
+"npm:prettier" = { version = "3.8.4", depends = ["node"] }
+"npm:skills" = { version = "1.5.11", depends = ["node"] }
+"npm:stacklit" = { version = "0.4.0", depends = ["node"] }
+python = "3.14.6"
+pipx = "1.14.0"
+uv = "0.11.21"
+"pipx:ruff" = { version = "0.15.17", depends = ["python", "pipx", "uv"] }
+"pipx:yamllint" = { version = "1.38.0", depends = ["python", "pipx", "uv"] }
+"pipx:graphifyy" = { version = "0.8.39", depends = ["python", "pipx", "uv"] }
+sqlite = { version = "3.53.2", os = ["linux", "macos"] }
+
+[env]
+PIPX_DEFAULT_BACKEND = "uv"
+_.path = [".venv/bin", ".venv/Scripts"]
+
+[tasks.init]
+description = "Initialize project repo"
+run = [
+  "uv sync",
+  # Deliver hooks from the committed .githooks/ dir rather than `hk install`,
+  # so the pre-push tag-skip guard (hk aborts on annotated tag pushes) ships
+  # with the repo. The hooks still delegate to hk for linting and tests.
+  "git config core.hooksPath .githooks",
+  "stacklit generate --quiet",
+  "graphify install --project",
+  "graphify update . --force",
+  "skills add ./skills/corpus --project --yes",
+  "skills add https://github.com/obra/superpowers --project --yes",
+]
+
+[tasks.check]
+description = "Run all checks against all files (ruff, ruff-format, pyright, markdown-lint, yamllint, prettier, skill-sync)"
+run = "hk check --all --check"
+
+[tasks.fix]
+description = "Run linters with auto-fix on all files"
+run = "hk fix --all"
+
+[tasks.outdated]
+description = "List mise tools with newer releases; pass --update to bump the pins in mise.toml and install"
+usage = 'flag "--update" help="upgrade every tool to its latest release and rewrite the version pins in mise.toml"'
+run = "uv run python scripts/outdated.py"
+
+[tasks.docs]
+description = "Serve project docs locally"
+run = "docsify serve src/corpus/docs --open"
+
+[tasks.vendor-docs]
+description = "Download and pin docsify/Prism front-end assets into src/corpus/docs/vendor/"
+run = "uv run python scripts/vendor_docs.py"
+
+[tasks.fmt]
+description = "Format project codebase"
+run = "uv run ruff format ."
+
+[tasks.lint]
+description = "Lint project codebase"
+run = "uv run ruff check ."
+
+[tasks.test]
+description = "Test project codebase (skips slow tests)"
+run = "uv run pytest -m 'not slow'"
+
+[tasks.coverage]
+description = "Run pytest with coverage report (skips slow tests); fails under the pyproject coverage gate"
+run = "uv run pytest -m 'not slow' --cov=src/corpus --cov-report=term-missing"
+
+[tasks.test-slow]
+description = "Run only the slow tests that download or run real ML models (docling, fastembed)"
+run = "uv run pytest -m slow"
+
+[tasks.verify]
+description = "Fetch, ingest, and query-validate all manifest items"
+run = "uv run python scripts/verify.py"
+
+[tasks.eval]
+description = "Run the Stage 0 retrieval eval harness (vector-only baseline)"
+run = "uv run python scripts/eval.py"
+
+[tasks.check-skill-sync]
+description = "Diff CLI commands and env vars between the user docs (usage.md, quickstart.md) and skills/corpus/reference.md"
+run = "uv run python scripts/check_skill_sync.py"
+
+[tasks.pad-tables]
+description = "Column-align all markdown tables (the alignment convention markdownlint does not enforce); also runs as a pre-commit fix step"
+run = "uv run python scripts/pad_tables.py"
+
+[tasks.bump-version]
+description = "Bump the release version across code and docs (src/corpus/docs/changelog.md is skipped)"
+usage = 'arg "<version>" help="new version, e.g. 0.11.0"'
+run = "uv run python scripts/bump_version.py $usage_version"
+
+[tasks.image-build]
+description = "Build the corpus image tagged for the SciTech ECR (scitech/corpus-cli); pass a tag, defaults to latest"
+usage = 'arg "[tag]" help="image tag" default="latest"'
+run = "uv run python scripts/image_build.py"
+
+[tasks.image-push]
+description = "Log in to the SciTech ECR and push the scitech/corpus-cli image; pass a tag, defaults to latest"
+usage = 'arg "[tag]" help="image tag" default="latest"'
+run = "uv run python scripts/image_push.py"
+
+[tasks.image-verify]
+description = "Verify a built corpus image (fast checks; --full adds a networked end-to-end PDF parse)"
+usage = '''
+arg "[tag]" help="image tag" default="latest"
+flag "--full" help="also run the networked end-to-end PDF parse"
+'''
+run = "uv run python scripts/verify_image.py"
+
+[tasks.stacklit]
+description = "Regenerate stacklit.json and DEPENDENCIES.md"
+usage = "flag --open 'Serve stacklit.html and open in browser after generating'"
+run = "uv run python scripts/stacklit.py"
+
+[tasks.graphify]
+description = "Generate graphify interactive codebase graph"
+usage = "flag --open 'Open graph.html in browser after generating'"
+run = "uv run python scripts/graphify.py"

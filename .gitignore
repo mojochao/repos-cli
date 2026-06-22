@@ -1,0 +1,122 @@
+# macOS litter
+.DS_Store
+
+# windows litter
+Thumbs.db
+
+# backup files
+*.bak
+*~
+
+# local mise files
+mise.local.toml
+
+# direnv files
+*.envrc
+
+# dotenv files
+*.env
+*.env.*
+!*.example.env
+
+# hidden files
+*.hid
+*.hide
+
+# log files
+*.log*
+corpus-logs/
+
+# temporary files
+*.tmp
+*.temp
+tmp/
+
+# common project build, distribution, and output directories
+build/
+out/
+
+# python artifacts
+*.egg-info
+.eggs/
+__pycache__/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.pyre/
+.ruff_cache/
+.venv/
+venv
+
+# javascript/typescript artifacts
+coverage/
+node_modules/
+.cache
+.parcel_cache
+.eslintcache
+.tsbuildinfo
+
+# jetbrains ide artifacts
+.idea/
+
+# vscode ide artifacts
+.vscode/settings.json
+.vscode/*.code-snippets
+
+# shared agents artifacts
+/.agents/
+!/.agents/AGENTS.md
+
+# claude agent artifacts
+/.claude/
+!.claude/settings.json
+
+# corpus artifacts
+/corpus/
+/corpus.db
+/corpus.db-*
+/corpus-reports/
+/corpus-cache/
+/config.toml
+# local corpus.db eval-set (references internal corpus paths; keep local)
+/scripts/eval/corpus-db-eval-set.yaml
+manifest.json
+manifest.yaml
+!tests/fixtures/corpus/manifest.yaml
+
+# superpowers artifacts
+.superpowers/
+
+# stacklit artifacts
+/stacklit.html
+/stacklit.json
+/DEPENDENCIES.md
+
+# graphify artifacts
+graphify-out/
+
+# babysitter artifacts
+.a5c/
+
+# playwright mcp artifacts
+.playwright-mcp/
+
+# qmd artifacts
+.qmd/
+
+# vercel skills artifacts
+/skills-lock.json
+
+# terraform artifacts
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
